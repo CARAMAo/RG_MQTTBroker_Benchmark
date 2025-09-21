@@ -1,0 +1,123 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    ports:
+      - "1883:1883"
+    networks:
+      - mqtt-net
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+
+  emqx:
+    image: emqx/emqx:latest
+    container_name: emqx
+    environment:
+      - EMQX_NAME=emqx
+      - EMQX_HOST=emqx
+    ports:
+      - "1883:1883"
+      - "18083:18083"
+    networks:
+      - mqtt-net
+    volumes:
+      - ./emqx/emqx.conf:/opt/emqx/etc/base.hocon
+
+  activemq:
+    image: apache/activemq-artemis:latest-alpine
+    container_name: activemq
+    environment:
+      - ACTIVEMQ_ADMIN_LOGIN=admin
+      - ACTIVEMQ_ADMIN_PASSWORD=admin
+    ports:
+      - "1883:1883"
+      - "8161:8161"
+    networks:
+      - mqtt-net
+    volumes:
+      - ./activemq/etc-override:/var/lib/artemis-instance/etc-override
+
+  nanomq:
+    image: emqx/nanomq:0.24
+    container_name: nanomq
+    ports:
+      - "1883:1883"
+      - "1884:1884"   # optional MQTT over WebSocket
+    networks:
+      - mqtt-net
+    volumes:
+      - ./nanomq/nanomq.conf:/usr/local/nanomq/nanomq.conf
+ 
+  rumqttd:
+    image: bytebeamio/rumqttd:latest
+    container_name: rumqttd
+    command: >
+      -c /rumqttd.toml
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./rumqttd/rumqttd.toml:/rumqttd.toml
+    networks:
+      - mqtt-net
+
+  rmqtt:
+    image: rmqtt/rmqtt:latest
+    container_name: rmqtt
+    ports:
+      - "1883:1883"
+    networks:
+      - mqtt-net
+    volumes:
+      - ./rmqtt/rmqtt.toml:/app/rmqtt/rmqtt.toml
+
+  conn:
+    image: emqx/emqtt-bench:0.4
+    container_name: conn
+    command: >
+      conn
+      -h ${BROKER_HOST}
+      -c ${NUM_CONN:-1000}
+      -i ${CONN_INTERVAL:-10}
+      -Q true
+    networks:
+      - mqtt-net
+
+  pub:
+    image: emqx/emqtt-bench:0.4
+    container_name: pub
+    command: >
+      pub
+      -h ${BROKER_HOST}
+      -t ${TOPIC_PATTERN_PUB:-test/topic/%i}
+      --payload-hdrs ts
+      -c ${NUM_PUB:-1}
+      -I ${PUB_INTERVAL:-100}
+      -s ${PAYLOAD_SIZE:-1024}
+      -V 4
+      -q ${QOS:-0}
+    networks:
+      - mqtt-net
+
+  sub:
+    image: emqx/emqtt-bench:0.4
+    container_name: sub
+    command: >
+      sub
+      -h ${BROKER_HOST}
+      -t ${TOPIC_PATTERN_SUB:-test/topic/#}
+      --payload-hdrs ts
+      -c ${NUM_SUB:-1}
+      -q ${QOS:-0}
+      -Q true
+      -V 4
+      --qoelog log
+      --prometheus
+      --restapi 8080
+    ports:
+      - "8080:8080"
+    networks:
+      - mqtt-net
+
+networks:
+  mqtt-net:
+

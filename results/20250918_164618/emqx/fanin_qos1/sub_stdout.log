@@ -1,0 +1,15 @@
+Start with 1 workers, addrs pool size: 1 and req interval: 10 ms 
+
+1s sub total=1 rate=0.99/sec
+1s connect_succ total=1 rate=0.99/sec
+8s publish_latency avg=0ms
+8s recv total=176 rate=21.97/sec
+9s publish_latency avg=6ms
+9s recv total=12100 rate=11924.00/sec
+10s publish_latency avg=24ms
+10s recv total=30742 rate=18642.00/sec
+11s publish_latency avg=19ms
+11s recv total=49087 rate=18345.00/sec
+client(1): EXIT for {shutdown,tcp_closed}
+12s publish_latency avg=44ms
+12s recv total=63436 rate=14349.00/sec

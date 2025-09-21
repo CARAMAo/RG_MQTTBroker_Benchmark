@@ -1,0 +1,122 @@
+Start with 8 workers, addrs pool size: 1 and req interval: 80 ms 
+
+1s sub total=97 rate=95.94/sec
+1s connect_succ total=97 rate=95.85/sec
+2s sub total=100 rate=3.00/sec
+2s connect_succ total=100 rate=3.00/sec
+8s publish_latency avg=0ms
+8s recv total=3498 rate=436.65/sec
+9s publish_latency avg=0ms
+9s recv total=21693 rate=18176.82/sec
+10s publish_latency avg=0ms
+10s recv total=41683 rate=20010.01/sec
+11s publish_latency avg=0ms
+11s recv total=61685 rate=20002.00/sec
+12s publish_latency avg=0ms
+12s recv total=81668 rate=19983.00/sec
+13s publish_latency avg=0ms
+13s recv total=101685 rate=20017.00/sec
+14s publish_latency avg=0ms
+14s recv total=121684 rate=19999.00/sec
+15s publish_latency avg=0ms
+15s recv total=141679 rate=19995.00/sec
+16s publish_latency avg=0ms
+16s recv total=161686 rate=20007.00/sec
+17s publish_latency avg=0ms
+17s recv total=181700 rate=19994.01/sec
+18s publish_latency avg=0ms
+18s recv total=201680 rate=20000.00/sec
+19s publish_latency avg=0ms
+19s recv total=221685 rate=19985.01/sec
+20s publish_latency avg=0ms
+20s recv total=241676 rate=20011.01/sec
+21s publish_latency avg=0ms
+21s recv total=261682 rate=19986.01/sec
+22s publish_latency avg=0ms
+22s recv total=281668 rate=20006.01/sec
+23s publish_latency avg=0ms
+23s recv total=301695 rate=20006.99/sec
+24s publish_latency avg=0ms
+24s recv total=321686 rate=20011.01/sec
+25s publish_latency avg=0ms
+25s recv total=341686 rate=20000.00/sec
+26s publish_latency avg=0ms
+26s recv total=361696 rate=19990.01/sec
+27s publish_latency avg=0ms
+27s recv total=381685 rate=19989.00/sec
+28s publish_latency avg=0ms
+28s recv total=401684 rate=20019.02/sec
+29s publish_latency avg=0ms
+29s recv total=421683 rate=19999.00/sec
+30s publish_latency avg=0ms
+30s recv total=441680 rate=19997.00/sec
+31s publish_latency avg=0ms
+31s recv total=461703 rate=20003.00/sec
+32s publish_latency avg=0ms
+32s recv total=481686 rate=20003.00/sec
+33s publish_latency avg=0ms
+33s recv total=501676 rate=19990.00/sec
+34s publish_latency avg=0ms
+34s recv total=521683 rate=20007.00/sec
+35s publish_latency avg=0ms
+35s recv total=541685 rate=20002.00/sec
+36s publish_latency avg=0ms
+36s recv total=561687 rate=20002.00/sec
+37s publish_latency avg=0ms
+37s recv total=581679 rate=19972.03/sec
+38s publish_latency avg=0ms
+38s recv total=601672 rate=20013.01/sec
+39s publish_latency avg=0ms
+39s recv total=621695 rate=20003.00/sec
+40s publish_latency avg=0ms
+40s recv total=641708 rate=20013.00/sec
+41s publish_latency avg=0ms
+41s recv total=661665 rate=19976.98/sec
+42s publish_latency avg=0ms
+42s recv total=681673 rate=20008.00/sec
+43s publish_latency avg=0ms
+43s recv total=701685 rate=20012.00/sec
+44s publish_latency avg=0ms
+44s recv total=721686 rate=20001.00/sec
+45s publish_latency avg=0ms
+45s recv total=741669 rate=19983.00/sec
+46s publish_latency avg=0ms
+46s recv total=761685 rate=20016.00/sec
+47s publish_latency avg=0ms
+47s recv total=781683 rate=19998.00/sec
+48s publish_latency avg=0ms
+48s recv total=801697 rate=19994.01/sec
+49s publish_latency avg=0ms
+49s recv total=821686 rate=19989.00/sec
+50s publish_latency avg=0ms
+50s recv total=841685 rate=19999.00/sec
+51s publish_latency avg=0ms
+51s recv total=861681 rate=20016.02/sec
+52s publish_latency avg=0ms
+52s recv total=881682 rate=20001.00/sec
+53s publish_latency avg=0ms
+53s recv total=901693 rate=19991.01/sec
+54s publish_latency avg=0ms
+54s recv total=921680 rate=20007.01/sec
+55s publish_latency avg=0ms
+55s recv total=941664 rate=19984.00/sec
+56s publish_latency avg=0ms
+56s recv total=961685 rate=20021.00/sec
+57s publish_latency avg=0ms
+57s recv total=981699 rate=19994.01/sec
+58s publish_latency avg=0ms
+58s recv total=1001680 rate=20001.00/sec
+59s publish_latency avg=0ms
+59s recv total=1021689 rate=19989.01/sec
+1m0s publish_latency avg=0ms
+1m0s recv total=1041685 rate=20016.02/sec
+1m1s publish_latency avg=0ms
+1m1s recv total=1061685 rate=20000.00/sec
+1m2s publish_latency avg=0ms
+1m2s recv total=1081691 rate=19986.01/sec
+1m3s publish_latency avg=0ms
+1m3s recv total=1101686 rate=20015.02/sec
+1m4s publish_latency avg=0ms
+1m4s recv total=1121690 rate=19984.02/sec
+1m5s publish_latency avg=0ms
+1m5s recv total=1141685 rate=19995.00/sec
