@@ -1,85 +1,147 @@
 import os
 import re
 import pandas as pd
+import numpy as np
 
-BASE_DIR = "results"
+RESULTS_DIR = "./"
+OUTPUT_FILE = os.path.join(RESULTS_DIR, "final_results.csv")
 
-RECV_RE = re.compile(r"^recv (\d+)")
-COUNT_RE = re.compile(r"^e2e_latency_count (\d+)")
-SUM_RE = re.compile(r"^e2e_latency_sum (\d+)")
-TEST_DURATION = 50
-def parse_sub_log(path):
-    """Parsa recv, count e sum e calcola lat_avg e throughput medio"""
-    recv_val, count_val, sum_val = None, None, None
 
-    with open(path) as f:
-        for line in f:
-            if m := RECV_RE.match(line):
-                recv_val = int(m.group(1))
-            elif m := COUNT_RE.match(line):
-                count_val = int(m.group(1))
-            elif m := SUM_RE.match(line):
-                sum_val = int(m.group(1))
-
-    if count_val is None or sum_val is None or recv_val is None:
-        raise ValueError(f"File {path} incompleto o malformattato")
-
-    lat_avg = sum_val / count_val if count_val > 0 else None
-    throughput = recv_val / TEST_DURATION  # media messaggi/s
-    return recv_val, lat_avg, throughput
-
-def parse_stats_csv(path):
-    """Media CPU e Memoria da docker stats"""
+def parse_cpu_mem(stats_file):
+    """Parsa CPU% e memoria media da stats.csv, normalizzando la CPU su 800%"""
     cpu_vals, mem_vals = [], []
-    with open(path) as f:
+    with open(stats_file, "r", errors="ignore") as f:
         for line in f:
-            parts = line.strip().split(",")
+            line = line.strip()
+            if not line or "," not in line:
+                continue
+            parts = line.split(",")
             if len(parts) < 3:
                 continue
-            cpu_str, mem_str = parts[1], parts[2]
+            cpu_str = parts[1].strip().replace("%", "")
+            mem_str = parts[2].strip().split("/")[0].strip()
+
             try:
-                cpu_vals.append(float(cpu_str.strip("%")))
-                mem_vals.append(float(mem_str.split()[0].replace("MiB","")))
-            except:
+                raw_cpu = float(cpu_str)
+                normalized_cpu = raw_cpu / 800 * 100  # normalizza su 0–100%
+                cpu_vals.append(normalized_cpu)
+            except ValueError:
                 continue
+
+            if "MiB" in mem_str:
+                mem_vals.append(float(mem_str.replace("MiB", "").strip()))
+            elif "GiB" in mem_str:
+                mem_vals.append(float(mem_str.replace("GiB", "").strip()) * 1024)
+
     return (
-        sum(cpu_vals) / len(cpu_vals) if cpu_vals else None,
-        sum(mem_vals) / len(mem_vals) if mem_vals else None,
+        np.mean(cpu_vals) if cpu_vals else None,
+        np.mean(mem_vals) if mem_vals else None,
     )
 
-rows = []
-for root, dirs, files in os.walk(BASE_DIR):
-    if "sub_metrics.log" in files and any(f.startswith("stats_") for f in files):
-        parts = root.split(os.sep)
-        if len(parts) < 4:
+
+def compute_quantile_from_buckets(buckets, total_count, q=0.95):
+    """Interpolazione lineare nei bucket Prometheus per stimare il percentile"""
+    target = q * total_count
+    prev_le, prev_count = 0.0, 0
+
+    for le, count in buckets:
+        if count >= target:
+            if le == float("inf"):
+                return prev_le  # se ultimo bucket è inf, ritorna limite precedente
+            bucket_fraction = (
+                (target - prev_count) / (count - prev_count)
+                if count > prev_count
+                else 0
+            )
+            return prev_le + (le - prev_le) * bucket_fraction
+        prev_le, prev_count = le, count
+
+    return float("nan")
+
+
+def parse_metrics(metrics_file):
+    """Parsa avg_latency e p95_latency interpolata da sub_metrics.log"""
+    avg_latency = None
+    p95_latency = None
+    buckets = []
+    total_count, total_sum = None, None
+
+    with open(metrics_file, "r") as f:
+        for line in f:
+            if line.startswith("e2e_latency_bucket"):
+                m = re.search(r'le="([^"]+)".*? (\d+)', line)
+                if m:
+                    le_str, count = m.groups()
+                    le = float("inf") if le_str == "+Inf" else float(le_str)
+                    buckets.append((le, int(count)))
+            elif line.startswith("e2e_latency_count"):
+                total_count = int(line.split()[-1])
+            elif line.startswith("e2e_latency_sum"):
+                total_sum = int(line.split()[-1])
+
+    if total_count and total_count > 0 and total_sum is not None:
+        avg_latency = total_sum / total_count
+        p95_latency = compute_quantile_from_buckets(buckets, total_count, 0.95)
+
+    return avg_latency, p95_latency
+
+
+def parse_stdout(stdout_file):
+    """Parsa avg throughput dal sub_stdout.log (solo da 10s in poi)"""
+    throughputs = []
+    with open(stdout_file, "r", errors="ignore") as f:
+        for line in f:
+            m = re.search(r"(\d+)s .*?recv total=\d+ rate=([\d.]+)/sec", line)
+            if m:
+                sec, rate = int(m.group(1)), float(m.group(2))
+                if sec >= 10:
+                    throughputs.append(rate)
+
+    return np.mean(throughputs) if throughputs else None
+
+
+def main():
+    rows = []
+    for broker in os.listdir(RESULTS_DIR):
+        broker_path = os.path.join(RESULTS_DIR, broker)
+        if not os.path.isdir(broker_path):
             continue
-        _, ts, broker, test = parts
-        qos = None
-        if "qos" in test:
-            qos = test.split("qos")[-1]
+        for test in os.listdir(broker_path):
+            test_path = os.path.join(broker_path, test)
+            if not os.path.isdir(test_path):
+                continue
 
-        sub_log = os.path.join(root, "sub_metrics.log")
-        stats_file = [f for f in files if f.startswith("stats_")][0]
-        stats_path = os.path.join(root, stats_file)
+            stats_file = os.path.join(test_path, f"stats_{test}.csv")
+            metrics_file = os.path.join(test_path, "sub_metrics.log")
+            stdout_file = os.path.join(test_path, "sub_stdout.log")
 
-        recv_val, lat_avg, throughput_avg = parse_sub_log(sub_log)
-        cpu_avg, mem_avg = parse_stats_csv(stats_path)
+            avg_cpu, avg_mem = (None, None)
+            avg_latency, p95_latency = (None, None)
+            avg_throughput = None
 
-        rows.append({
-            "broker": broker,
-            "test": test,
-            "qos": qos,
-            "recv": recv_val,
-            "latency_avg_ms": lat_avg,
-            "throughput_avg_msg_s": throughput_avg,
-            "cpu_avg_percent": cpu_avg,
-            "mem_avg_MB": mem_avg,
-        })
+            if os.path.exists(stats_file):
+                avg_cpu, avg_mem = parse_cpu_mem(stats_file)
+            if os.path.exists(metrics_file):
+                avg_latency, p95_latency = parse_metrics(metrics_file)
+            if os.path.exists(stdout_file):
+                avg_throughput = parse_stdout(stdout_file)
 
-df = pd.DataFrame(rows)
+            rows.append(
+                {
+                    "broker": broker,
+                    "test": test,
+                    "avg_latency_ms": avg_latency,
+                    "p95_latency_ms": p95_latency,
+                    "avg_throughput_msg_s": avg_throughput,
+                    "avg_cpu_percent": avg_cpu,
+                    "avg_mem_mb": avg_mem,
+                }
+            )
 
-ts_file = os.path.join(BASE_DIR, "summary.csv")
-df.to_csv(ts_file, index=False)
-print(f">>> Dati scritti in {ts_file}")
-print(df)
+    df = pd.DataFrame(rows)
+    df.to_csv(OUTPUT_FILE, index=False)
+    print(f"✅ Risultati salvati in {OUTPUT_FILE}")
 
+
+if __name__ == "__main__":
+    main()
