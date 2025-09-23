@@ -21,7 +21,7 @@ pub_succ 0
 connection_idle 0
 # TYPE publish_latency counter
 # HELP publish_latency publish_latency
-publish_latency 101385243
+publish_latency 25385243
 # TYPE pub_fail counter
 # HELP pub_fail pub_fail
 pub_fail 0
@@ -82,13 +82,13 @@ e2e_latency_bucket{le="1"} 1543
 e2e_latency_bucket{le="5"} 2944
 e2e_latency_bucket{le="10"} 15398
 e2e_latency_bucket{le="25"} 136087
-e2e_latency_bucket{le="50"} 140791
-e2e_latency_bucket{le="100"} 228917
+e2e_latency_bucket{le="50"} 660597
+e2e_latency_bucket{le="100"} 770597
 e2e_latency_bucket{le="500"} 770597
 e2e_latency_bucket{le="1000"} 770597
 e2e_latency_bucket{le="+Inf"} 770597
 e2e_latency_count 770597
-e2e_latency_sum 101386196
+e2e_latency_sum 25386196
 # TYPE erlang_vm_memory_atom_bytes_total gauge
 # HELP erlang_vm_memory_atom_bytes_total The total amount of memory currently allocated for atoms. This memory is part of the memory presented as system memory.
 erlang_vm_memory_atom_bytes_total{usage="used"} 699425

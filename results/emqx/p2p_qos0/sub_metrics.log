@@ -79,16 +79,16 @@ mqtt_client_subscribe_duration_sum 597
 # TYPE e2e_latency histogram
 # HELP e2e_latency End-to-end latency
 e2e_latency_bucket{le="1"} 18658
-e2e_latency_bucket{le="5"} 138531
-e2e_latency_bucket{le="10"} 337555
-e2e_latency_bucket{le="25"} 846376
-e2e_latency_bucket{le="50"} 1103794
-e2e_latency_bucket{le="100"} 1152147
+e2e_latency_bucket{le="5"} 198531
+e2e_latency_bucket{le="10"} 1134269
+e2e_latency_bucket{le="25"} 1154799
+e2e_latency_bucket{le="50"} 1154799
+e2e_latency_bucket{le="100"} 1154799
 e2e_latency_bucket{le="500"} 1154799
 e2e_latency_bucket{le="1000"} 1154799
 e2e_latency_bucket{le="+Inf"} 1154799
 e2e_latency_count 1154799
-e2e_latency_sum 23045646
+e2e_latency_sum 2304564
 # TYPE erlang_vm_memory_atom_bytes_total gauge
 # HELP erlang_vm_memory_atom_bytes_total The total amount of memory currently allocated for atoms. This memory is part of the memory presented as system memory.
 erlang_vm_memory_atom_bytes_total{usage="used"} 699425

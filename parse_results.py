@@ -3,7 +3,7 @@ import re
 import pandas as pd
 import numpy as np
 
-RESULTS_DIR = "./"
+RESULTS_DIR = "results"
 OUTPUT_FILE = os.path.join(RESULTS_DIR, "final_results.csv")
 
 
