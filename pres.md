@@ -9,9 +9,9 @@ _class: lead
 
 # Benchmarking di broker MQTT open-source
 
-Pasquale Caramante
-Università degli Studi di Salerno
-Corso di Reti Geografiche: Struttura,Analisi e Prestazioni
+Pasquale Caramante  
+Università degli Studi di Salerno  
+Corso di Reti Geografiche: Struttura,Analisi e Prestazioni  
 Laurea Magistrale in Informatica - LM 18
 
 ---
@@ -48,7 +48,74 @@ Laurea Magistrale in Informatica - LM 18
 
 ---
 
+# QoS 0 — At most once
+
+- Messaggio consegnato **al massimo una volta**;  
+- Nessuna conferma di ricezione;  
+- È la modalità più veloce ma non garantisce affidabilità.  
+
+![QoS0](URL_DELL_IMMAGINE)
+
+---
+
+# QoS 1 — At least once
+
+- Messaggio consegnato **almeno una volta**;  
+- Richiede conferma di ricezione con pacchetto **PUBACK**;  
+- Possibile duplicazione dei messaggi.  
+
+![QoS1](URL_DELL_IMMAGINE)
+
+---
+
+# QoS 2 — Exactly once
+
+- Messaggio consegnato **esattamente una volta**;  
+- Richiede un handshake a quattro fasi (PUBREC, PUBREL, PUBCOMP);  
+- Massima affidabilità ma con overhead maggiore.  
+
+![QoS2](URL_DELL_IMMAGINE)
+
+---
+
 # MQTT Broker
 
-- Il **broker** è il cuore del sistema MQTT: gestisce le connessioni, mantiene le subscribe/unsubscribe, riceve messaggi pubblicati e li invia ai destinatari corretti.
-- Il broker si occupa anche della persistenza dei messaggi (in accordo con QoS e sessioni), filtra topic e applica politiche di autorizzazione.
+- Il **broker** è il cuore del sistema MQTT: gestisce le connessioni, le sessioni e i topic, instradando i messaggi ricevuti ai destinatari corretti;
+- Le prestazioni di un broker possono essere influenzate da diversi fattori:
+  - Configurazione HW/SW;
+  - Implementazione del broker;
+  - Configurazione MQTT;
+  - Architettura Pub/Sub;
+
+---
+
+# Obiettivi
+
+- Testare diverse implementazioni di broker MQTT;  
+- Confrontare le prestazioni in termini di:  
+  - **Latenza end-to-end**;  
+  - **Throughput dei messaggi**;  
+  - **Consumo di CPU**;  
+  - **Consumo di memoria**.  
+
+---
+
+# Metodologia — emqtt-bench
+
+- **emqtt-bench** è un tool di benchmarking MQTT che permette di simulare publisher e subscriber, raccogliendo metriche di latenza e throughput.  
+- Permette di configurare:
+  - Numero di client;
+  - Frequenza di pubblicazione;
+  - Dimensione del payload;
+  - Parametri di QoS.
+
+---
+
+# Esempio
+
+```bash
+emqtt_bench pub -h localhost -p 1883 -t test/topic -c 100 -q 1 -I 100
+```
+```bash
+emqtt_bench sub -h localhost -p 1883 -t test/topic -c 100 -q 1
+```
