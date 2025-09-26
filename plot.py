@@ -46,7 +46,7 @@ def plot_single_test(subset, test, metric, ylabel, title, filename):
     ax.set_xticklabels(brokers, rotation=45, ha="right")  # Ruota le label
     ax.grid(axis="y", linestyle=":", alpha=0.5)
     plt.tight_layout()
-    plt.savefig(f"plots/{filename}.pdf", bbox_inches="tight")
+    plt.savefig(f"plots/{filename}.png", bbox_inches="tight")
     plt.close()
 
 
@@ -72,7 +72,7 @@ def plot_barchart(df, tests, labels, metric, ylabel, title, filename):
     ax.legend()
     ax.grid(axis="y", linestyle=":", alpha=0.5)
     plt.tight_layout()
-    plt.savefig(f"plots/{filename}.pdf", bbox_inches="tight")
+    plt.savefig(f"plots/{filename}.png", bbox_inches="tight")
     plt.close()
 
 
@@ -224,7 +224,7 @@ for test in tests:
     ax.set_ylabel("Memory (MB)")
     ax.grid(True, linestyle=":", alpha=0.5)
     plt.tight_layout()
-    plt.savefig(f"plots/scatter_{test}.pdf", bbox_inches="tight")
+    plt.savefig(f"plots/scatter_{test}.png", bbox_inches="tight")
     plt.close()
 
 print("✅ Scatterplot per ciascun test salvati in plots/")

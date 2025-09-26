@@ -42,12 +42,11 @@ services:
     container_name: nanomq
     ports:
       - "1883:1883"
-      - "1884:1884"   # optional MQTT over WebSocket
     networks:
       - mqtt-net
     volumes:
       - ./nanomq/nanomq.conf:/usr/local/nanomq/nanomq.conf
- 
+
   rumqttd:
     image: bytebeamio/rumqttd:latest
     container_name: rumqttd
@@ -120,4 +119,3 @@ services:
 
 networks:
   mqtt-net:
-

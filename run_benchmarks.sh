@@ -3,7 +3,7 @@ set -euo pipefail
 
 BROKERS=("mosquitto" "emqx" "nanomq" "rumqttd" "rmqtt")
 #BROKERS=("rumqttd" "rmqtt")
-DURATION=${DURATION:-60}         # durata test in secondi
+DURATION=${DURATION:-300}         # durata test in secondi
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 BASE_OUTDIR=results/
 
