@@ -3,9 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-# ===============================
-# Impostazioni globali per grafici IEEE
-# ===============================
 plt.rcParams.update(
     {
         "font.size": 9,
@@ -17,48 +14,41 @@ plt.rcParams.update(
     }
 )
 
-# Carica i dati
 df = pd.read_csv("./results/final_results.csv")
 
 if not os.path.isdir("plots"):
     os.mkdir("plots")
 
-# Palette colori
 cmap = plt.get_cmap("tab10")
 
 
-# ===============================
 # Funzione grafico separato per singolo test (X = broker)
-# ===============================
 def plot_single_test(subset, test, metric, ylabel, title, filename):
     brokers = subset["broker"].values
     values = subset[metric].values
 
-    fig, ax = plt.subplots(figsize=(3.5, 2.5))  # singola colonna
+    fig, ax = plt.subplots(figsize=(3.5, 2.5))
     bars = ax.bar(brokers, values)
 
-    # Colori diversi
     for i, bar in enumerate(bars):
         bar.set_color(cmap(i % 10))
 
     ax.set_ylabel(ylabel)
     ax.set_xticks(np.arange(len(brokers)))
-    ax.set_xticklabels(brokers, rotation=45, ha="right")  # Ruota le label
+    ax.set_xticklabels(brokers, rotation=45, ha="right")
     ax.grid(axis="y", linestyle=":", alpha=0.5)
     plt.tight_layout()
     plt.savefig(f"plots/{filename}.png", bbox_inches="tight")
     plt.close()
 
 
-# ===============================
 # Grafici aggregati (multi test)
-# ===============================
 def plot_barchart(df, tests, labels, metric, ylabel, title, filename):
     brokers = df["broker"].unique()
     x = np.arange(len(labels))
     width = 0.15
 
-    fig, ax = plt.subplots(figsize=(7, 3))  # due colonne
+    fig, ax = plt.subplots(figsize=(7, 3))
     for i, broker in enumerate(brokers):
         subset = df[df["broker"] == broker].set_index("test")
         values = [
@@ -76,9 +66,7 @@ def plot_barchart(df, tests, labels, metric, ylabel, title, filename):
     plt.close()
 
 
-# ===============================
 # P2P QoS (aggregati)
-# ===============================
 tests_p2p = ["p2p_qos0", "p2p_qos1", "p2p_qos2"]
 labels_p2p = ["QoS 0", "QoS 1", "QoS 2"]
 
@@ -110,9 +98,7 @@ plot_barchart(
     "p2p_throughput",
 )
 
-# ===============================
 # P2P QoS (separati per broker)
-# ===============================
 for test in tests_p2p:
     subset = df[df["test"] == test]
     plot_single_test(
@@ -140,9 +126,7 @@ for test in tests_p2p:
         f"{test}_throughput",
     )
 
-# ===============================
 # P2P/Fanin/Fanout (aggregati)
-# ===============================
 tests_mix = ["p2p_qos1", "fanin_qos1", "fanout_qos1"]
 labels_mix = ["p2p", "Fan-in", "Fan-out"]
 
@@ -174,9 +158,7 @@ plot_barchart(
     "mixed_throughput",
 )
 
-# ===============================
 # P2P/Fanin/Fanout (separati per broker)
-# ===============================
 for test in tests_mix:
     subset = df[df["test"] == test]
     plot_single_test(
@@ -204,9 +186,7 @@ for test in tests_mix:
         f"{test}_throughput",
     )
 
-# ===============================
 # Scatterplot CPU vs Memoria
-# ===============================
 tests = df["test"].unique()
 for test in tests:
     subset = df[df["test"] == test]
@@ -227,5 +207,4 @@ for test in tests:
     plt.savefig(f"plots/scatter_{test}.png", bbox_inches="tight")
     plt.close()
 
-print("✅ Scatterplot per ciascun test salvati in plots/")
-print("✅ Tutti i grafici (aggregati e separati) sono stati salvati in plots/")
+print("Completato")
